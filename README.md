@@ -6,6 +6,8 @@ So don't use Nuummite to handle big chunks of data.
 Keys and Values are always Strings.
 It just comes with the most basic operations.
 
+NOTE: Nuummite is stil WIP.
+
 ## Installation
 
 
