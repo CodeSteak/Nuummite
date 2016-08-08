@@ -1,6 +1,6 @@
 # Nuummite
 
-Nuummite is very small embedded key-value store. All data is kept
+Nuummite is a very small embedded key-value store. All data is kept
 in RAM (in a Crystal Hash) and is also written to disk.
 So don't use Nuummite to handle big chunks of data.
 Keys and Values are always Strings.
