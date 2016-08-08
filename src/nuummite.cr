@@ -2,11 +2,10 @@ require "./nuummite/*"
 require "io"
 
 class Nuummite
-
   VERSION = 1
   property sync : Bool
   @log : File
-  @kv : Hash(String,String)
+  @kv : Hash(String, String)
   property autoclean_after_writes : Int32? = 10_000_000
 
   class Opcode
@@ -17,7 +16,7 @@ class Nuummite
 
   def initialize(folder : String, @filename = "db.nuummite", @sync = true)
     @need_clean = false
-    @log,@kv = open_folder(folder, @filename)
+    @log, @kv = open_folder(folder, @filename)
     @channel = Channel(Proc(Nil)).new
     @running = true
     spawn do
@@ -26,7 +25,7 @@ class Nuummite
     clean if @need_clean
   end
 
-  private def open_folder(folder, filename) : {File, Hash(String,String)}
+  private def open_folder(folder, filename) : {File, Hash(String, String)}
     Dir.mkdir(folder) unless Dir.exists?(folder)
 
     path = "#{folder}#{File::SEPARATOR}#{filename}"
@@ -35,20 +34,20 @@ class Nuummite
     new_file = false
 
     kv = if File.exists?(path)
-      read_file_to_kv path
-    elsif File.exists?(alt_path)
-      File.rename(alt_path, path)
-      read_file_to_kv path
-    else
-      new_file = true
-      Hash(String,String).new
-    end
+           read_file_to_kv path
+         elsif File.exists?(alt_path)
+           File.rename(alt_path, path)
+           read_file_to_kv path
+         else
+           new_file = true
+           Hash(String, String).new
+         end
 
     file = File.new(path, "a")
     if new_file
       file.write_byte(VERSION.to_u8)
     end
-    {file , kv }
+    {file, kv}
   end
 
   macro do_save(block)
@@ -61,7 +60,7 @@ class Nuummite
 
   @writes = 0
   private def check_autoclean
-    if autoclean =  @autoclean_after_writes
+    if autoclean = @autoclean_after_writes
       @writes += 1
       if @writes > autoclean
         @writes = 0
@@ -102,7 +101,7 @@ class Nuummite
   def []=(key, value)
     ch = Channel(String?).new
     do_save begin
-      log_write(key,value)
+      log_write(key, value)
       ch.send @kv[key] = value
     end
     res = ch.receive
@@ -134,7 +133,7 @@ class Nuummite
 
       @log.write_byte(VERSION.to_u8)
       @kv.each do |key, value|
-         log_write(key,value)
+        log_write(key, value)
       end
       @log.flush
       @log.close
@@ -151,7 +150,7 @@ class Nuummite
   private def run
     while @running
       op = @channel.receive
-      op.call()
+      op.call
     end
 
     @log.flush
@@ -189,7 +188,7 @@ class Nuummite
   end
 
   private def read_file_to_kv(path)
-    kv = Hash(String,String).new
+    kv = Hash(String, String).new
 
     file = File.new(path)
     version = file.read_byte.not_nil!
@@ -199,12 +198,12 @@ class Nuummite
       while opcode = file.read_byte
         case opcode
         when Opcode::WRITE
-          key   = read_string_arg file
+          key = read_string_arg file
           value = read_string_arg file
 
           kv[key] = value
         when Opcode::REMOVE
-          key   = read_string_arg file
+          key = read_string_arg file
 
           kv.delete key
         when Opcode::RENAME
@@ -239,8 +238,8 @@ class Nuummite
   end
 
   private def read_string(io, size)
-     data = Slice(UInt8).new(size)
-     io.read_fully(data)
-     String.new(data)
+    data = Slice(UInt8).new(size)
+    io.read_fully(data)
+    String.new(data)
   end
 end

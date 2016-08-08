@@ -1,13 +1,12 @@
 require "./spec_helper"
 
 def with_db(name)
-  db = Nuummite.new("tmpdb",name)
+  db = Nuummite.new("tmpdb", name)
   yield db
   db.shutdown
 end
 
 describe Nuummite do
-
   it "make new db and save state, do operations" do
     with_db("one") do |db|
       db["a"] = "aaa"
@@ -57,7 +56,7 @@ describe Nuummite do
       1000.times do |i|
         db["key"] = "#{i}"
       end
-      db.clean()
+      db.clean
     end
     file_size = File.size("tmpdb/two")
     (file_size < 100).should be_true
