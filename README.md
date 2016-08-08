@@ -51,8 +51,8 @@ db.delete "hello"
 ```
 
 #### Clean
-Since values are saved to disk in a log style file sizes grow.
-Your key-value store needs a clean.
+Since values are saved to disk in a log style, file sizes grow,
+your key-value store needs to rewrite all data at some point:
 ```crystal
 db.clean
 ```
@@ -64,7 +64,7 @@ db.autoclean_after_writes = nil  # does not autoclean
 ```
 
 #### Shutdown
-You can also shutdown nuummite by
+You can also shutdown Nuummite by
 ```crystal
 db.shutdown
 ```
