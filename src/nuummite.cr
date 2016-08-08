@@ -1,4 +1,3 @@
-require "./nuummite/*"
 require "io"
 
 class Nuummite
