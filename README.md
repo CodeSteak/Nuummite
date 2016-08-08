@@ -1,4 +1,5 @@
 # Nuummite
+[![Build Status](https://travis-ci.org/CodeSteak/Nuummite.svg?branch=master)](https://travis-ci.org/CodeSteak/Nuummite)
 
 Nuummite is a very small embedded key-value store. All data is kept
 in RAM (in a Crystal Hash) and is also written to disk.
