@@ -1,11 +1,14 @@
 require "io"
 
 class Nuummite
+
   VERSION = 1
+
+  property autoclean_after_writes : Int32? = 10_000_000
   property sync : Bool
+
   @log : File
   @kv : Hash(String, String)
-  property autoclean_after_writes : Int32? = 10_000_000
 
   class Opcode
     RENAME = 3
@@ -114,6 +117,26 @@ class Nuummite
 
   def []?(key)
     @kv[key]?
+  end
+
+  def each(starts_with : String = "")
+    ch_unlock = Channel(Nil).new
+    ch_lock = Channel(Nil).new
+
+    do_save begin
+      ch_lock.send nil
+      ch_unlock.not_nil!.receive
+    end
+
+    ch_lock.receive
+
+    @kv.each do |key, value|
+      if key.starts_with?(starts_with)
+        yield key, value
+      end
+    end
+  ensure
+    ch_unlock.not_nil!.send nil
   end
 
   def clean

@@ -43,6 +43,19 @@ db["whitespace"] = "Hey\n\t\t :D"
 ```crystal
 db["hello"]? # => "world"
 db["ehhhh"]? # => nil
+
+#Note: db is locked while reading, so don't write to db!
+db.each do |key,value|
+  # reads everything
+end
+
+db["crystals/ruby"] = "9.0"
+db["crystals/quartz"] = "~ 7.0"
+db["crystals/nuummite"] = "5.5 - 6.0"
+
+db.each("crystals/") do |key,value|
+  # only crystals in here
+end
 ```
 
 #### Delete

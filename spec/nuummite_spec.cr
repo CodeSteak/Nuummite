@@ -51,6 +51,29 @@ describe Nuummite do
     end
   end
 
+  it "each" do
+    with_db("each") do |db|
+      db["a"] = ">D"
+      db["crystals/ruby"] = ""
+      db["crystals/quartz"] = ""
+      db["crystals/nuummite"] = ""
+
+      i = 0
+      db.each do
+        i += 1
+      end
+      i.should eq(4)
+
+      i = 0
+      db.each("crystals/") do
+        i += 1
+      end
+      i.should eq(3)
+
+      db["a"]?.should eq(">D")
+    end
+  end
+
   it "clean db" do
     with_db("two") do |db|
       1000.times do |i|
