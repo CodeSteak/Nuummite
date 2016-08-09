@@ -31,6 +31,10 @@ require "nuummite"
 #### Open the database
 ```crystal
 db = Nuummite.new("path/to/folder", "optional-filename.db")
+
+# You can also have multiple:
+flowers  = Nuummite.new("flowers")
+minerals = Nuummite.new("minerals")
 ```
 
 #### Put some values in
