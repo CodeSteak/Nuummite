@@ -1,8 +1,8 @@
-<img src="https://raw.githubusercontent.com/codesteak/nuummite/master/docs/nuummite.png" width="25%" align="right">
+<img src="https://raw.githubusercontent.com/codesteak/nuummite/master/docs/nuummite.png" width="15%" align="right">
 
 # Nuummite [![Build Status](https://travis-ci.org/CodeSteak/Nuummite.svg?branch=master)](https://travis-ci.org/CodeSteak/Nuummite)
 
-Nuummite is a very small embedded key-value store. All data is kept
+Nuummite is a tiny persistent embedded key-value store. All data is kept
 in RAM (in a Crystal Hash) and is also written to disk.
 So don't use Nuummite to handle big chunks of data.
 Keys and Values are always Strings.
