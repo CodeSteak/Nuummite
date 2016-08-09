@@ -10,7 +10,7 @@ class Nuummite
   @log : File
   @kv : Hash(String, String)
 
-  class Opcode
+  enum Opcode : UInt8
     RENAME = 3
     REMOVE = 2
     WRITE  = 1
@@ -192,7 +192,7 @@ class Nuummite
   end
 
   private def log(opcode, arg0, arg1 = nil)
-    @log.write_byte(opcode.to_u8)
+    @log.write_byte(opcode.value.to_u8)
 
     write_string_arg(@log, arg0)
     write_string_arg(@log, arg1) if arg1
@@ -218,7 +218,7 @@ class Nuummite
 
     begin
       while opcode = file.read_byte
-        case opcode
+        case Opcode.new opcode
         when Opcode::WRITE
           key = read_string_arg file
           value = read_string_arg file
