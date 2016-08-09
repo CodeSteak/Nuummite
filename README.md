@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/codesteak/nuummite/master/docs/nuummite.png" width="25%" align="right">
+<img src="https://raw.githubusercontent.com/codesteak/nuummite/master/docs/nuummite.png" width="15%" align="right">
 
 # Nuummite [![Build Status](https://travis-ci.org/CodeSteak/Nuummite.svg?branch=master)](https://travis-ci.org/CodeSteak/Nuummite)
 
