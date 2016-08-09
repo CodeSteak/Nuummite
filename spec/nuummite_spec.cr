@@ -28,7 +28,7 @@ describe Nuummite do
     end
   end
 
-  it "make new db and save state, do operations and clean" do
+  it "make new db and save state, do operations and garbage_collect" do
     with_db("one") do |db|
       db["a"] = "a✌a"
       db["b"] = "bbb"
@@ -39,7 +39,7 @@ describe Nuummite do
       db.delete("e")
       db["d"] = "ddd"
 
-      db.clean
+      db.garbage_collect
     end
 
     with_db("one") do |db|
@@ -74,20 +74,20 @@ describe Nuummite do
     end
   end
 
-  it "clean db" do
+  it "garbage collect db" do
     with_db("two") do |db|
       1000.times do |i|
         db["key"] = "#{i}"
       end
-      db.clean
+      db.garbage_collect
     end
     file_size = File.size("tmpdb/two")
     (file_size < 100).should be_true
   end
 
-  it "auto clean db" do
+  it "auto garbage collect db" do
     with_db("three") do |db|
-      db.autoclean_after_writes = 10000
+      db.auto_garbage_collect_after_writes = 10000
       10001.times do |i|
         db["#{i}"] = "data"*5
         db.delete "#{i}"

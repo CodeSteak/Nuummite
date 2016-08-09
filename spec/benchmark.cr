@@ -8,7 +8,7 @@ puts
 
 db = Nuummite.new("benchmark_db")
 
-db.autoclean_after_deletes = nil
+db.auto_garbage_collect_after_writes = nil
 db.sync = false
 
 puts "1000_000 small writes"
@@ -40,9 +40,9 @@ puts
   db["#{i}/lol"] = "I <3 DATA !!!!"
 end
 
-puts "clean with 1000_000 entries"
+puts "garbage collect with 1000_000 entries"
 puts Benchmark.measure() do
-  db.clean
+  db.garbage_collect
 end
 puts
 

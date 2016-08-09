@@ -4,7 +4,7 @@ class Nuummite
 
   VERSION = 1
 
-  property autoclean_after_writes : Int32? = 10_000_000
+  property auto_garbage_collect_after_writes : Int32? = 10_000_000
   property sync : Bool
 
   @log : File
@@ -17,14 +17,14 @@ class Nuummite
   end
 
   def initialize(folder : String, @filename = "db.nuummite", @sync = true)
-    @need_clean = false
+    @need_gc = false
     @log, @kv = open_folder(folder, @filename)
     @channel = Channel(Proc(Nil)).new
     @running = true
     spawn do
       run
     end
-    clean if @need_clean
+    garbage_collect if @need_gc
   end
 
   private def open_folder(folder, filename) : {File, Hash(String, String)}
@@ -61,12 +61,12 @@ class Nuummite
   end
 
   @writes = 0
-  private def check_autoclean
-    if autoclean = @autoclean_after_writes
+  private def check_autogc
+    if autogc = @auto_garbage_collect_after_writes
       @writes += 1
-      if @writes > autoclean
+      if @writes > autogc
         @writes = 0
-        clean
+        garbage_collect
       end
     end
   end
@@ -96,7 +96,7 @@ class Nuummite
       ch.send @kv.delete(key)
     end
     res = ch.receive
-    check_autoclean
+    check_autogc
     res
   end
 
@@ -107,7 +107,7 @@ class Nuummite
       ch.send @kv[key] = value
     end
     res = ch.receive
-    check_autoclean
+    check_autogc
     res
   end
 
@@ -139,7 +139,7 @@ class Nuummite
     ch_unlock.not_nil!.send nil
   end
 
-  def clean
+  def garbage_collect
     save_blocking begin
       path = @log.path
       alt_path = "#{path}.1"
@@ -242,7 +242,7 @@ class Nuummite
       puts "Data is incomplete. \
             Please set sync to true to prevent this type of data corruption"
       puts "Continue..."
-      @need_clean = true
+      @need_gc = true
     end
     file.close
     kv

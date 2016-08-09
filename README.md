@@ -63,17 +63,20 @@ end
 db.delete "hello"
 ```
 
-#### Clean
+#### Garbage collect
 Since values are saved to disk in a log style, file sizes grow,
 your key-value store needs to rewrite all data at some point:
 ```crystal
-db.clean
+db.garbage_collect
 ```
-By default it autocleans after 10_000_000 writes.
+By default it auto garbage collects after 10_000_000 writes.
 To modify this behavior you can:
 ```crystal
-db.autoclean_after_writes = 1000 # cleans after 1000 writes or deletes
-db.autoclean_after_writes = nil  # does not autoclean
+# garbage collects after 1000 writes or deletes
+db.auto_garbage_collect_after_writes = 1000
+
+# does not auto garbage collect
+db.auto_garbage_collect_after_writes = nil  
 ```
 
 #### Shutdown
