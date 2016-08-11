@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/codesteak/nuummite/master/docs/nuummite.png" width="15%" align="right">
+<img src="https://raw.githubusercontent.com/codesteak/nuummite/master/docs/nuummite.png" width="25%" align="right">
 
 # Nuummite [![Build Status](https://travis-ci.org/CodeSteak/Nuummite.svg?branch=master)](https://travis-ci.org/CodeSteak/Nuummite)
 
@@ -8,10 +8,8 @@ So don't use Nuummite to handle big chunks of data.
 Keys and Values are always Strings.
 It just comes with the most basic operations.
 
-NOTE: Nuummite is still WIP.
 
 ## Installation
-
 
 Add this to your application's `shard.yml`:
 
@@ -19,6 +17,7 @@ Add this to your application's `shard.yml`:
 dependencies:
   nuummite:
     github: codesteak/nuummite
+    version: ~> 0.1.0
 ```
 
 
