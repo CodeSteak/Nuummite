@@ -1,4 +1,4 @@
-module Lockable
+module Locking
   @running = true
   @channel_lock = Channel(Nil).new
   @channel_unlock = Channel(Nil).new

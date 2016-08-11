@@ -1,7 +1,7 @@
 require "./locking/*"
 
 class Nuummite
-  include Lockable
+  include Locking
 
   VERSION = 1
 
