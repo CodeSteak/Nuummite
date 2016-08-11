@@ -1,6 +1,8 @@
-require "io"
+require "./locking/*"
 
 class Nuummite
+  include Lockable
+
   VERSION = 1
 
   property auto_garbage_collect_after_writes : Int32? = 10_000_000
@@ -18,10 +20,8 @@ class Nuummite
   def initialize(folder : String, @filename = "db.nuummite", @sync = true)
     @need_gc = false
     @log, @kv = open_folder(folder, @filename)
-    @running = true
-    spawn do
-      manage_locks
-    end
+
+    enable_locking
     garbage_collect if @need_gc
   end
 
@@ -64,10 +64,9 @@ class Nuummite
   end
 
   def shutdown
-    save do
-      @running = false
-      @log.flush
-    end
+    disable_locking
+    @log.flush
+    @log.close
   end
 
   def delete(key)
@@ -134,34 +133,6 @@ class Nuummite
 
       @log = File.new(path, "a")
     end
-  end
-
-  @channel_lock = Channel(Nil).new
-
-  def lock
-    @channel_lock.send nil
-  end
-
-  @channel_unlock = Channel(Nil).new
-
-  def unlock
-    @channel_unlock.send nil
-  end
-
-  def save
-    lock
-    yield
-  ensure
-    unlock
-  end
-
-  private def manage_locks
-    while @running
-      op = @channel_lock.receive
-      op = @channel_unlock.receive
-    end
-    @log.flush
-    @log.close
   end
 
   private def log_write(key, value)
