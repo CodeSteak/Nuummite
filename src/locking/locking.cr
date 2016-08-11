@@ -5,7 +5,7 @@ module Locking
   @channel_unlock = Channel(Nil).new
 
   private def lock
-    @channel_lock.send nil
+    @channel_lock.receive
   end
 
   private def unlock
@@ -27,14 +27,14 @@ module Locking
 
   private def disable_locking
     save do
-      @runnig = false
+      @running = false
     end
   end
 
   private def manage_locks
     while @running
-      op = @channel_lock.receive
-      op = @channel_unlock.receive
+      @channel_lock.send nil
+      @channel_unlock.receive
     end
   end
 end
