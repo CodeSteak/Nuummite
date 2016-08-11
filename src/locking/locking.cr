@@ -4,15 +4,15 @@ module Locking
   @channel_lock = Channel(Nil).new
   @channel_unlock = Channel(Nil).new
 
-  def lock
+  private def lock
     @channel_lock.send nil
   end
 
-  def unlock
+  private def unlock
     @channel_unlock.send nil
   end
 
-  def save
+  private def save
     lock
     yield
   ensure
