@@ -92,7 +92,7 @@ describe Nuummite do
         db["#{i}"] = "data"*5
         db.delete "#{i}"
       end
-
+      sleep 0.01
       file_size = File.size("tmpdb/three")
       (file_size < 100).should be_true
     end

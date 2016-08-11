@@ -1,6 +1,7 @@
-require "io"
+require "./locking/*"
 
 class Nuummite
+  include Locking
 
   VERSION = 1
 
@@ -19,11 +20,8 @@ class Nuummite
   def initialize(folder : String, @filename = "db.nuummite", @sync = true)
     @need_gc = false
     @log, @kv = open_folder(folder, @filename)
-    @channel = Channel(Proc(Nil)).new
-    @running = true
-    spawn do
-      run
-    end
+
+    enable_locking
     garbage_collect if @need_gc
   end
 
@@ -52,63 +50,41 @@ class Nuummite
     {file, kv}
   end
 
-  macro do_save(block)
-    raise Exception.new("already shutdown") unless @running
-    @channel.send ->() do
-      {{block}}
-      nil
-    end
-  end
-
   @writes = 0
   private def check_autogc
     if autogc = @auto_garbage_collect_after_writes
       @writes += 1
       if @writes > autogc
         @writes = 0
-        garbage_collect
+        spawn do
+          garbage_collect
+        end
       end
     end
   end
 
-  macro save_blocking(block)
-    raise Exception.new("already shutdown") unless @running
-    ch = Channel(Nil).new
-    @channel.send ->() do
-      {{block}}
-      ch.send(nil)
-      nil
-    end
-    ch.receive
-  end
-
   def shutdown
-    save_blocking begin
-      @running = false
-      @log.flush
-    end
+    disable_locking
+    @log.flush
+    @log.close
   end
 
   def delete(key)
-    ch = Channel(String?).new
-    do_save begin
+    save do
       log_remove(key)
-      ch.send @kv.delete(key)
+      @kv.delete(key)
     end
-    res = ch.receive
+  ensure
     check_autogc
-    res
   end
 
   def []=(key, value)
-    ch = Channel(String?).new
-    do_save begin
+    save do
       log_write(key, value)
-      ch.send @kv[key] = value
+      @kv[key] = value
     end
-    res = ch.receive
+  ensure
     check_autogc
-    res
   end
 
   def [](key)
@@ -120,27 +96,17 @@ class Nuummite
   end
 
   def each(starts_with : String = "")
-    ch_unlock = Channel(Nil).new
-    ch_lock = Channel(Nil).new
-
-    do_save begin
-      ch_lock.send nil
-      ch_unlock.not_nil!.receive
-    end
-
-    ch_lock.receive
-
-    @kv.each do |key, value|
-      if key.starts_with?(starts_with)
-        yield key, value
+    save do
+      @kv.each do |key, value|
+        if key.starts_with?(starts_with)
+          yield key, value
+        end
       end
     end
-  ensure
-    ch_unlock.not_nil!.send nil
   end
 
   def garbage_collect
-    save_blocking begin
+    save do
       path = @log.path
       alt_path = "#{path}.1"
       File.delete(alt_path) if File.exists?(alt_path)
@@ -167,16 +133,6 @@ class Nuummite
 
       @log = File.new(path, "a")
     end
-  end
-
-  private def run
-    while @running
-      op = @channel.receive
-      op.call
-    end
-
-    @log.flush
-    @log.close
   end
 
   private def log_write(key, value)
