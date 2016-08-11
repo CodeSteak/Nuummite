@@ -1,3 +1,4 @@
+# Allows basic locking.
 module Locking
   @running = true
   @channel_lock = Channel(Nil).new

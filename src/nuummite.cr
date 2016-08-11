@@ -1,11 +1,17 @@
 require "./locking/*"
 
+# Nuummite is a minimalistic persistent key-value store.
 class Nuummite
   include Locking
 
   VERSION = 1
 
+  # Number of writes or deletes before automatic garbage collection happens.
+  #
+  # Set it to nil to disable automatic garbage collection.
   property auto_garbage_collect_after_writes : Int32? = 10_000_000
+
+  # If true the logfile is flushed on every write.
   property sync : Bool
 
   @log : File
@@ -63,12 +69,14 @@ class Nuummite
     end
   end
 
+  # Shuts down this instance of Nuummite.
   def shutdown
     disable_locking
     @log.flush
     @log.close
   end
 
+  # Delets a key. Returns its value.
   def delete(key)
     save do
       log_remove(key)
@@ -78,6 +86,7 @@ class Nuummite
     check_autogc
   end
 
+  # Set key to value.
   def []=(key, value)
     save do
       log_write(key, value)
@@ -87,14 +96,27 @@ class Nuummite
     check_autogc
   end
 
+  # Reads value to given key.
   def [](key)
     @kv[key]
   end
 
+  # Reads value to given key. Returns `nil` if key is not avilable.
   def []?(key)
     @kv[key]?
   end
 
+  # Yields every key-value pair where the key starts with `starts_with`.
+  # ```
+  # db["crystals/ruby"] = "9.0"
+  # db["crystals/quartz"] = "~ 7.0"
+  # db["crystals/nuummite"] = "5.5 - 6.0"
+  #
+  # db.each("crystals/") do |key, value|
+  #   # only crystals in here
+  # end
+  # ```
+  # `starts_with` defaults to `""`. Then every key-value pair is yield.
   def each(starts_with : String = "")
     save do
       @kv.each do |key, value|
@@ -105,6 +127,7 @@ class Nuummite
     end
   end
 
+  # Rewrites current state to logfile.
   def garbage_collect
     save do
       path = @log.path
