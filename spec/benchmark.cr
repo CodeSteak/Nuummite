@@ -41,7 +41,7 @@ puts
 end
 
 puts "garbage collect with 1000_000 entries"
-puts Benchmark.measure() {
+puts Benchmark.measure {
   db.garbage_collect
 }
 puts
