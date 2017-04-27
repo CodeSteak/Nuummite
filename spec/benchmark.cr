@@ -12,28 +12,28 @@ db.auto_garbage_collect_after_writes = nil
 db.sync = false
 
 puts "1000_000 small writes"
-puts Benchmark.measure() do
+puts Benchmark.measure {
   1000_000.times do |i|
     db["#{i}"] = "I <3 DATA"
   end
-end
+}
 puts
 
 puts "1000_000 small deletes"
-puts Benchmark.measure() do
+puts Benchmark.measure {
   1000_000.times do |i|
     db.delete "#{i}"
   end
-end
+}
 puts
 
 db.shutdown
 sleep 0.01
 
 puts "reopen after 2000_000 operations"
-puts Benchmark.measure() do
+puts Benchmark.measure {
   db = Nuummite.new("benchmark_db")
-end
+}
 puts
 
 1000_000.times do |i|
@@ -41,9 +41,9 @@ puts
 end
 
 puts "garbage collect with 1000_000 entries"
-puts Benchmark.measure() do
+puts Benchmark.measure() {
   db.garbage_collect
-end
+}
 puts
 
 db.shutdown
