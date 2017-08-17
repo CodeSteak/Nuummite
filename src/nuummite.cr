@@ -52,6 +52,7 @@ class Nuummite
     file = File.new(path, "a")
     if new_file
       file.write_byte(VERSION.to_u8)
+      file.flush
     end
     {file, kv}
   end
