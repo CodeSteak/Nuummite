@@ -39,9 +39,9 @@ class Nuummite
 
     new_file = false
 
-    kv = if File.exists?(path)
+    kv = if File.exists?(path) && File.size(path) > 0
            read_file_to_kv path
-         elsif File.exists?(alt_path)
+         elsif File.exists?(alt_path) && File.size(alt_path) > 0
            File.rename(alt_path, path)
            read_file_to_kv path
          else

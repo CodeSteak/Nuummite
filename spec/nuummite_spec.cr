@@ -28,6 +28,38 @@ describe Nuummite do
     end
   end
 
+  it "open empty file" do
+    #create empty file
+    folder = "tmpdb";
+    Dir.mkdir(folder) unless Dir.exists?(folder)
+
+    path = "#{folder}#{File::SEPARATOR}empty"
+
+    file = File.new(path, "a")
+    file.close()
+    # and reopen it
+    with_db("empty") do |db|
+      db["a"] = "aaa"
+      db["a"]?.should eq("aaa")
+    end
+  end
+
+  it "open empty alt file" do
+    #create empty alt file
+    folder = "tmpdb";
+    Dir.mkdir(folder) unless Dir.exists?(folder)
+
+    path = "#{folder}#{File::SEPARATOR}empty2.1"
+
+    file = File.new(path, "a")
+    file.close()
+    # and reopen it
+    with_db("empty2") do |db|
+      db["a"] = "aaa"
+      db["a"]?.should eq("aaa")
+    end
+  end
+
   it "make new db and save state, do operations and garbage_collect" do
     with_db("one") do |db|
       db["a"] = "a✌a"
