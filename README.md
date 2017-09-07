@@ -17,7 +17,7 @@ Add this to your application's `shard.yml`:
 dependencies:
   nuummite:
     github: codesteak/nuummite
-    version: ~> 0.1.1
+    version: ~> 0.1.2
 ```
 
 
