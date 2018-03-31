@@ -134,7 +134,7 @@ describe Nuummite do
 end
 
 def clean(dir_name = "tmpdb")
-  Dir.foreach(dir_name) do |filename|
+  Dir.new(dir_name).each do |filename|
     path = "#{dir_name}#{File::SEPARATOR}#{filename}"
     File.delete(path) if File.file?(path)
   end
