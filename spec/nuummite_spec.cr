@@ -138,5 +138,5 @@ def clean(dir_name = "tmpdb")
     path = "#{dir_name}#{File::SEPARATOR}#{filename}"
     File.delete(path) if File.file?(path)
   end
-  Dir.rmdir(dir_name)
+  Dir.delete(dir_name)
 end
